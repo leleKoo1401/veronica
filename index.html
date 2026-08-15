@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Para Verônica ❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            font-family: 'Georgia', serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .borda-neon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 3px solid #ff2a6d;
+            box-shadow: 0 0 20px #ff2a6d, inset 0 0 20px #ff2a6d;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        #canvas-particulas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #overlay-inicio {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+
+        #overlay-inicio h1 {
+            color: #ff2a6d;
+            font-size: 2em;
+            text-shadow: 0 0 15px #ff2a6d;
+            margin-bottom: 10px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        #overlay-inicio p {
+            color: #fff;
+            font-size: 1.1em;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        .play-button {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #ff2a6d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 0 40px #ff2a6d;
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: pulsar-play 2s infinite;
+        }
+
+        .play-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 60px #ff2a6d;
+        }
+
+        .play-button .triangulo {
+            width: 0;
+            height: 0;
+            border-left: 35px solid white;
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            margin-left: 8px;
+        }
+
+        @keyframes pulsar-play {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #conteudo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .elemento {
+            position: absolute;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1.5s ease, filter 1.5s ease;
+            pointer-events: none;
+        }
+
+        .elemento.visivel {
+            pointer-events: auto;
+        }
+
+        .data {
+            color: #ff2a6d;
+            font-size: 3em;
+            text-shadow: 0 0 25px #ff2a6d;
+            font-weight: bold;
+        }
+
+        .foto {
+            width: 100%;
+            border-radius: 20px;
+            border: 3px solid #ff2a6d;
+            box-shadow: 0 0 30px #ff2a6d;
+        }
+
+        .texto {
+            color: #f0f0f0;
+            font-size: 1.4em;
+            line-height: 1.6;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            max-height: 70vh;
+            overflow-y: auto;
+            padding: 10px;
+            box-sizing: border-box;
+            -webkit-overflow-scrolling: touch;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 42, 109, 0.4);
+            box-shadow: 0 0 15px rgba(255, 42, 109, 0.3);
+        }
+
+        /* Container final */
+        .final-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            width: 90%;
+            max-width: 500px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 42, 109, 0.5);
+            box-shadow: 0 0 30px rgba(255, 42, 109, 0.3);
+            position: relative;
+        }
+
+        .foto-final-container {
+            position: relative;
+            width: 100%;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .foto-final {
+            width: 100%;
+            border-radius: 15px;
+            border: 3px solid #ff2a6d;
+            box-shadow: 0 0 25px #ff2a6d;
+            display: block;
+        }
+
+        .mensagem-final {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            padding: 20px 10px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.3));
+            color: #ff2a6d;
+            font-family: 'Brush Script MT', 'Great Vibes', cursive;
+            font-size: 1.8em;
+            text-align: center;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9), 0 0 20px #ff2a6d;
+            line-height: 1.4;
+            border: none;
+            border-radius: 0;
+            word-break: break-word;
+            pointer-events: none;
+        }
+
+        .visivel {
+            opacity: 1 !important;
+        }
+
+        .desfocado {
+            filter: blur(8px);
+        }
+
+        /* Seta para avançar */
+        #seta {
+            position: absolute;
+            bottom: 10vh;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 15;
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #ff2a6d;
+            font-size: 3em;
+            text-shadow: 0 0 15px #ff2a6d;
+            animation: pulsar-seta 1.5s infinite;
+        }
+
+        @keyframes pulsar-seta {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.2); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+
+        /* Overlay "eu te amo" */
+        #euTeAmo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+
+        #euTeAmo span {
+            color: #ff2a6d;
+            font-family: 'Brush Script MT', cursive;
+            font-size: 4em;
+            text-shadow: 0 0 40px #ff2a6d;
+            animation: pulsar 2s infinite;
+        }
+
+        .checkbox-container {
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            font-size: 1.2em;
+            background: rgba(255, 42, 109, 0.2);
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid #ff2a6d;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-container input {
+            width: 20px;
+            height: 20px;
+            accent-color: #ff2a6d;
+            pointer-events: auto;
+        }
+
+        @keyframes pulsar {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Foto quando checkbox marcada */
+        #fotoCompleta {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 25;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        #fotoCompleta img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 20px;
+            border: 3px solid #ff2a6d;
+            box-shadow: 0 0 40px #ff2a6d;
+        }
+    </style>
+</head>
+<body>
+    <div class="borda-neon"></div>
+    <canvas id="canvas-particulas"></canvas>
+
+    <div id="overlay-inicio">
+        <h1>Uma surpresa para você ❤️</h1>
+        <p>Toque no play para começar</p>
+        <div class="play-button" onclick="iniciarExperiencia()">
+            <div class="triangulo"></div>
+        </div>
+    </div>
+
+    <div id="conteudo">
+        <div id="data1" class="elemento data">25/12/2025</div>
+        <img id="foto1" class="elemento foto" src="https://raw.githubusercontent.com/leleKoo1401/veronica/81c365386b85ba046e9a91b2829a3be8b594f4a4/foto1.jpeg" alt="Foto 1">
+        <div id="texto1" class="elemento texto">
+            Naquela época, eu já sentia por você algo que era difícil explicar em palavras. Eu ficava ansioso imaginando o dia em que finalmente poderia te ver, conversar com você e estar diante da mulher que ocupava tantos pensamentos meus.<br><br>
+            Então chegou o dia <strong>25 de dezembro de 2025</strong>. Eu me lembro de como fiquei nervoso naquele dia. Minhas mãos suavam muito, meu coração parecia querer sair pela boca e, ao mesmo tempo, eu sentia uma felicidade enorme por finalmente viver aquele momento que eu tanto esperava.<br><br>
+            E quando finalmente te conheci, tudo mudou dentro de mim.<br><br>
+            Aquele dia foi maravilhoso. Foi como se todo o sentimento que eu já carregava por você encontrasse um lugar ainda maior para crescer. A partir daquele momento, meu amor por você começou a aumentar em um nível que eu jamais imaginei ser possível.<br><br>
+            O dia 25 de dezembro de 2025 ficou marcado para sempre na minha história, porque foi o dia em que eu conheci a mulher que mais amei e amo em toda a minha vida.<br><br>
+            E, olhando para trás, eu percebo que aquele não foi apenas um encontro. Foi o começo de uma das partes mais importantes da minha história com você.
+        </div>
+
+        <div id="data2" class="elemento data">30/12/2025</div>
+        <img id="foto2" class="elemento foto" src="https://raw.githubusercontent.com/leleKoo1401/veronica/81c365386b85ba046e9a91b2829a3be8b594f4a4/foto2.jpeg" alt="Foto 2">
+        <div id="texto2" class="elemento texto">
+            No dia <strong>30 de dezembro de 2025</strong>, vivemos mais um daqueles momentos que ficaram guardados em mim de uma forma especial. Foi o dia em que vimos nosso primeiro filme um ao lado do outro, usando aquele projetor que você me deu e que, até hoje, eu ainda uso. Só isso já seria suficiente para tornar aquele dia inesquecível.<br><br>
+            E o filme? Bom... era um filme trash, ruim demais! KKKKKKKKKKK. Mas, sinceramente, naquele momento isso não importava nem um pouco. Eu poderia estar assistindo ao pior filme já feito na história e, ainda assim, teria sido uma das melhores experiências que eu poderia viver, simplesmente porque você estava ali comigo.<br><br>
+            Lembro principalmente da sensação de estar perto de você. Foi como se, depois de tanto tempo procurando um lugar onde meu coração pudesse descansar, eu finalmente tivesse encontrado esse lugar.<br><br>
+            Naquele dia, no seu abraço, eu senti uma paz que não consigo explicar completamente. Foi como se, por alguns instantes, todos os problemas, medos e preocupações desaparecessem.<br><br>
+            E foi ali, naquele abraço, que meu coração encontrou um motivo para continuar. Não pelo filme, não pelo projetor, nem pelo momento em si, mas porque eu estava ao lado da pessoa que fazia tudo parecer valer a pena.<br><br>
+            <strong>30 de dezembro de 2025 foi o dia em que encontrei descanso no seu abraço.</strong>
+        </div>
+
+        <div id="data3" class="elemento data">16/02/2026</div>
+        <img id="foto3" class="elemento foto" src="https://raw.githubusercontent.com/leleKoo1401/veronica/81c365386b85ba046e9a91b2829a3be8b594f4a4/foto3.jpeg" alt="Foto 3">
+        <div id="textoLongo" class="elemento texto">
+            No dia <strong>16 de fevereiro de 2026</strong>, um dia antes do Carnaval, você veio mais uma vez, e aquele encontro foi diferente de todos os outros. Eu já sentia que meu amor por você havia crescido muito desde dezembro de 2025, mas naquele dia eu descobri que ainda era possível sentir algo muito maior.<br><br>
+            Foi ali que eu percebi, de verdade, que eu te amava. Eu senti um amor que nunca havia sentido antes, uma certeza que veio de dentro e que não precisava de nenhuma explicação.<br><br>
+            Naquele dia fomos à praia, e eu, como sempre, consegui fazer uma bela participação especial como <strong>camarão humano</strong>. KKKKKKKKKK. Fiquei vermelho, passei mal com a insolação e, no meio daquela situação, vi você cuidando de mim.<br><br>
+            E foi justamente naquele momento, talvez no mais simples deles, que meu coração teve certeza: <strong>é você.</strong><br><br>
+            Você era, e é, a mulher da minha vida. A mulher que eu amo de verdade, a mulher com quem eu quero estar ao lado, compartilhar meus dias, minhas conquistas, meus medos, minhas alegrias e até os momentos em que eu consigo transformar um passeio à praia em uma emergência por insolação. KKKKKKKKKK.<br><br>
+            Naquele dia, eu fiz uma escolha dentro de mim: <strong>é você.</strong><br><br>
+            E, se eu pudesse escolher novamente mil vezes, em todas elas escolheria você. Porque você é a minha escolha, e sempre será uma das escolhas mais importantes da minha vida.
+        </div>
+
+        <!-- Container final com foto e mensagem sobreposta -->
+        <div id="finalContainer" class="elemento final-container">
+            <div class="foto-final-container">
+                <img class="foto-final" src="https://raw.githubusercontent.com/leleKoo1401/veronica/81c365386b85ba046e9a91b2829a3be8b594f4a4/foto4.jpeg" alt="Foto Final">
+                <div class="mensagem-final">Você é a escolha mais importante, a mais linda e a mais sincera da minha vida.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seta para avançar -->
+    <button id="seta" onclick="avancarTexto()">▼</button>
+
+    <!-- Overlay "eu te amo" com checkbox -->
+    <div id="euTeAmo">
+        <span>eu te amo!</span>
+        <label class="checkbox-container">
+            <input type="checkbox" id="checkboxMusica"> Marque para ouvir a música completa
+        </label>
+    </div>
+
+    <!-- Foto quando checkbox marcada -->
+    <div id="fotoCompleta">
+        <img src="https://raw.githubusercontent.com/leleKoo1401/veronica/a8c6713da838529a9c080e11d3c139e567744900/WhatsApp%20Image%202026-08-14%20at%2021.47.21.jpeg" alt="Foto completa">
+    </div>
+
+    <audio id="musica" src="https://raw.githubusercontent.com/leleKoo1401/veronica/81c365386b85ba046e9a91b2829a3be8b594f4a4/negatifhardcore_avenged-7-vold-gunslinger-mp3.mp3" preload="auto"></audio>
+    <audio id="musica2" src="https://raw.githubusercontent.com/leleKoo1401/veronica/9ba07cffe939a0bbfc9a86cbf9e2eed7fc1c23b9/Avenged-Sevenfold-Cosmic-(CeeNaija.com).mp3" preload="auto"></audio>
+
+    <script>
+        // ========== PARTÍCULAS ==========
+        const canvas = document.getElementById('canvas-particulas');
+        const ctx = canvas.getContext('2d');
+        let particulas = [];
+        const EMOJIS = ['✨', '🌹', '💖', '🌸', '⭐', '💫'];
+
+        function redimensionarCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', redimensionarCanvas);
+        redimensionarCanvas();
+
+        class Particula {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 20;
+                this.tamanho = Math.random() * 20 + 10;
+                this.velocidadeY = Math.random() * 2 + 1;
+                this.velocidadeX = (Math.random() - 0.5) * 2;
+                this.emoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+                this.rotacao = Math.random() * 360;
+                this.velocidadeRotacao = (Math.random() - 0.5) * 4;
+                this.opacidade = Math.random() * 0.7 + 0.3;
+            }
+
+            atualizar() {
+                this.y -= this.velocidadeY;
+                this.x += this.velocidadeX;
+                this.rotacao += this.velocidadeRotacao;
+                if (this.y < -50) {
+                    this.y = canvas.height + 20;
+                    this.x = Math.random() * canvas.width;
+                }
+                if (this.x < -50) this.x = canvas.width + 50;
+                if (this.x > canvas.width + 50) this.x = -50;
+            }
+
+            desenhar() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rotacao * Math.PI) / 180);
+                ctx.font = `${this.tamanho}px serif`;
+                ctx.globalAlpha = this.opacidade;
+                ctx.fillText(this.emoji, 0, 0);
+                ctx.restore();
+            }
+        }
+
+        function criarParticulas() {
+            for (let i = 0; i < 30; i++) {
+                particulas.push(new Particula());
+            }
+        }
+        criarParticulas();
+
+        function animarParticulas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particulas.forEach(p => {
+                p.atualizar();
+                p.desenhar();
+            });
+            requestAnimationFrame(animarParticulas);
+        }
+        animarParticulas();
+
+        // ========== CONTROLE DE ÁUDIO ==========
+        let musica = document.getElementById('musica');
+        let musica2 = document.getElementById('musica2');
+
+        function fadeOut(audio, duration, callback) {
+            const steps = 20;
+            const interval = duration * 1000 / steps;
+            const volumeStep = audio.volume / steps;
+            let currentStep = 0;
+            const fadeInterval = setInterval(() => {
+                currentStep++;
+                if (currentStep >= steps) {
+                    audio.volume = 0;
+                    clearInterval(fadeInterval);
+                    if (callback) callback();
+                } else {
+                    audio.volume = Math.max(0, audio.volume - volumeStep);
+                }
+            }, interval);
+            return fadeInterval;
+        }
+
+        function fadeIn(audio, duration, targetVolume = 1) {
+            return new Promise(resolve => {
+                audio.volume = 0;
+                audio.play().then(() => {
+                    const steps = 20;
+                    const interval = duration * 1000 / steps;
+                    const volumeStep = targetVolume / steps;
+                    let currentStep = 0;
+                    const fadeInterval = setInterval(() => {
+                        currentStep++;
+                        if (currentStep >= steps) {
+                            audio.volume = targetVolume;
+                            clearInterval(fadeInterval);
+                            resolve();
+                        } else {
+                            audio.volume = Math.min(targetVolume, audio.volume + volumeStep);
+                        }
+                    }, interval);
+                }).catch(e => {
+                    console.log('Erro ao tocar:', e);
+                    resolve();
+                });
+            });
+        }
+
+        // ========== SEQUÊNCIA ==========
+        let overlay = document.getElementById('overlay-inicio');
+        let seta = document.getElementById('seta');
+        let textoAtual = null;
+        let resolverSeta = null;
+
+        function mostrarElemento(id, duracao) {
+            return new Promise(resolve => {
+                const el = document.getElementById(id);
+                el.classList.add('visivel');
+                setTimeout(() => {
+                    el.classList.remove('visivel');
+                    resolve();
+                }, duracao * 1000);
+            });
+        }
+
+        function mostrarDataComDesfoque(id, duracaoMostra, duracaoDesfoque) {
+            return new Promise(resolve => {
+                const el = document.getElementById(id);
+                el.classList.add('visivel');
+                setTimeout(() => {
+                    el.classList.add('desfocado');
+                    setTimeout(() => {
+                        el.classList.remove('visivel', 'desfocado');
+                        resolve();
+                    }, duracaoDesfoque * 1000);
+                }, duracaoMostra * 1000);
+            });
+        }
+
+        function mostrarTextoComSeta(id) {
+            return new Promise(resolve => {
+                const texto = document.getElementById(id);
+                texto.classList.add('visivel');
+                seta.style.display = 'block';
+                textoAtual = texto;
+                resolverSeta = () => {
+                    seta.style.display = 'none';
+                    texto.classList.remove('visivel');
+                    resolverSeta = null;
+                    textoAtual = null;
+                    resolve();
+                };
+            });
+        }
+
+        function avancarTexto() {
+            if (resolverSeta) {
+                resolverSeta();
+            }
+        }
+
+        async function iniciarExperiencia() {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.style.display = 'none', 1000);
+
+            try {
+                await musica.play();
+            } catch (e) {
+                console.log('Erro ao tocar Gunslinger:', e);
+            }
+
+            // Fade out da Gunslinger nos últimos 3s e entrada da Cosmic
+            let fadeOutGunslingerIniciado = false;
+            const checkGunslinger = setInterval(() => {
+                if (musica.duration && !fadeOutGunslingerIniciado && musica.currentTime >= musica.duration - 3) {
+                    fadeOutGunslingerIniciado = true;
+                    clearInterval(checkGunslinger);
+                    fadeOut(musica, 3, () => {
+                        musica.pause();
+                        fadeIn(musica2, 2, 1);
+                    });
+                }
+            }, 100);
+
+            // Linha do tempo manual
+            await mostrarDataComDesfoque('data1', 4, 1); // 5s total
+            await mostrarElemento('foto1', 10);
+            await mostrarTextoComSeta('texto1');
+
+            await mostrarDataComDesfoque('data2', 4, 1);
+            await mostrarElemento('foto2', 10);
+            await mostrarTextoComSeta('texto2');
+
+            await mostrarDataComDesfoque('data3', 4, 1);
+            await mostrarElemento('foto3', 10);
+            await mostrarTextoComSeta('textoLongo');
+
+            // Container final (foto 4 + mensagem) por 20s
+            await mostrarElemento('finalContainer', 20);
+
+            // "eu te amo" com checkbox
+            const euTeAmo = document.getElementById('euTeAmo');
+            const checkbox = document.getElementById('checkboxMusica');
+            const fotoCompleta = document.getElementById('fotoCompleta');
+            const finalContainer = document.getElementById('finalContainer');
+
+            euTeAmo.style.opacity = '1';
+            euTeAmo.style.pointerEvents = 'auto';
+            checkbox.checked = false;
+
+            let timerFechar = setTimeout(fecharTela, 10000);
+            let fadeOutCosmicInterval = null;
+            let timerFadeOutCosmic = setTimeout(() => {
+                if (!checkbox.checked) {
+                    fadeOutCosmicInterval = fadeOut(musica2, 3);
+                }
+            }, 7000);
+
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    clearTimeout(timerFechar);
+                    clearTimeout(timerFadeOutCosmic);
+                    if (fadeOutCosmicInterval) {
+                        clearInterval(fadeOutCosmicInterval);
+                        fadeOutCosmicInterval = null;
+                        musica2.volume = 1.0;
+                    }
+                    // Esconder overlay "eu te amo" e container final
+                    euTeAmo.style.opacity = '0';
+                    euTeAmo.style.pointerEvents = 'none';
+                    finalContainer.classList.remove('visivel');
+                    // Mostrar a nova foto
+                    fotoCompleta.classList.add('visivel');
+                    // Manter a Cosmic tocando até o fim
+                    musica2.addEventListener('ended', fecharTela, { once: true });
+                }
+            });
+        }
+
+        function fecharTela() {
+            document.body.style.backgroundColor = '#000';
+            window.close();
+            setTimeout(() => {
+                document.getElementById('conteudo').style.display = 'none';
+                document.getElementById('canvas-particulas').style.display = 'none';
+                document.querySelector('.borda-neon').style.display = 'none';
+                document.getElementById('euTeAmo').style.display = 'none';
+                document.getElementById('fotoCompleta').style.display = 'none';
+                overlay.style.display = 'none';
+                document.body.innerHTML = '';
+            }, 500);
+        }
+    </script>
+</body>
+</html>
